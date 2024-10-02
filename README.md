@@ -1,5 +1,5 @@
-# Movue
-Movue est une petite application application développer en python et avec flask qui permet de référencer les films et les séries que vous avez vus, et les retrouver facilement.
+# Movue (Movie & vu)
+Movue est une petite application développée en python et avec flask qui permet de référencer les films et les séries que vous avez vus, et les retrouver facilement.
 <img width="1469" alt="Capture d’écran 2024-10-02 à 13 06 49" src="https://github.com/user-attachments/assets/f6336109-4e75-40d2-bcc3-0f8b76040b41">
 
 
