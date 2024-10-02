@@ -7,7 +7,7 @@ Movue est une petite application application développer en python et avec flask
 ## Vidéo de présentation
 [Cliquez ici pour voir la vidéo](https://www.youtube.com/watch?v=gi0tgngS3ME&ab_channel=ByWarz)
 
-## Installation
+## Installation & Utilisation
 Pour initialiser le projet exécuter cette commande dans le terminal : 
 ```
 git clone https://github.com/JacobTADEI/movue
@@ -28,6 +28,12 @@ Enfin, dans le même terminal exécuter la commande suivante pour lancer l'appli
 ```
 python app.py
 ```
+
+Si vous voulez que l'app s'ouvre sur votre ordinateur et non dans votre navigateur web alors exécuter cette commande : 
+```
+python app_with_gui.py
+```
+
 Cliquez ensuite sur n'importe lequel des deux liens, votre application devrait s'ouvrir et vous pourrez alors lister vos films et séries !
 
 ## Design
