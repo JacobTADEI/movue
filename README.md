@@ -10,7 +10,7 @@ Movue est une petite application application développer en python et avec flask
 ## Installation & Utilisation
 Pour initialiser le projet exécuter cette commande dans le terminal : 
 ```
-git clone https://github.com/JacobTADEI/movue
+git clone https://github.com/Styyz1/movue
 ```
 Puis dans le dossier 'movue', créer votre environnement virtuel, avec cette commande 
 ```
