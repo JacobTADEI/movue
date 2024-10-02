@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Films et Séries</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #0073e6;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            margin: 0 0 1em 0;
+        }
+        form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input[type="text"], select {
+            padding: 0.5em;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        button {
+            padding: 0.5em 1em;
+            font-size: 1em;
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: white;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 5px;
+            width: 80%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li img {
+            max-width: 50px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        li .media-info {
+            flex-grow: 1;
+        }
+        li button {
+            background-color: #ff4d4d;
+        }
+        li button:hover {
+            background-color: #cc0000;
+        }
+        li button.vu {
+            background-color: green;
+        }
+        li button.vu:hover {
+            background-color: darkgreen;
+        }
+        @media (max-width: 600px) {
+            li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            li img {
+                max-width: 100px;
+                margin-bottom: 10px;
+            }
+            li button {
+                align-self: flex-end;
+                margin-top: 10px;
+            }
+        }
+        button#back-to-home, button#done-adding {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button#back-to-home:hover, button#done-adding:hover {
+            background-color: #005bb5;
+        }
+        button#done-adding {
+            left: 100px; /* Positionner ce bouton un peu plus loin que back-to-home */
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Films et Séries</h1>
+    </header>
+    <button id="back-to-home">Retour à l'accueil</button>
+    <button id="done-adding">Terminer</button>
+    <main>
+        <section id="home-section">
+            <form id="search-form">
+                <input type="text" id="title" name="title" placeholder="Titre">
+                <button type="submit">Rechercher</button>
+            </form>
+        </section>
+        <section id="results-section" style="display:none;">
+            <h2>Résultats de la recherche</h2>
+            <ul id="search-results"></ul>
+        </section>
+        <section id="seen-section">
+            <h2>Films/Séries vus</h2>
+            <form id="filter-form">
+                <label for="category">Filtrer par catégorie :</label>
+                <select id="category" name="category">
+                    <option value="">Toutes</option>
+                    <option value="movie">Films</option>
+                    <option value="tv">Séries</option>
+                </select>
+                <label for="genre">Filtrer par genre :</label>
+                <select id="genre" name="genre">
+                    <option value="">Tous les genres</option>
+                    <!-- Genres will be populated here -->
+                </select>
+                <label for="search-seen">Rechercher dans les films vus :</label>
+                <input type="text" id="search-seen" name="search-seen" placeholder="Recherche...">
+            </form>
+            <ul id="seen-media">
+                {% for media in seen_media %}
+                    <li data-id="{{ media.id }}" data-media-type="{{ media.media_type }}" data-genres="{{ media.genres }}" data-title="{{ media.title }}">
+                        <img src="https://image.tmdb.org/t/p/w500{{ media.poster_path }}" alt="{{ media.title }}">
+                        <div class="media-info">
+                            {{ media.title }} ({{ media.release_date }}) - {{ media.media_type }} <br> Genres: {{ media.genres }}
+                        </div>
+                        <button class="remove-seen">Supprimer</button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+    <script>
+        $(document).ready(function() {
+            var seenMedia = [];
+
+            function populateSeenMedia() {
+                $('#seen-media li').each(function() {
+                    var mediaId = $(this).data('id');
+                    seenMedia.push(mediaId);
+                });
+            }
+
+            var genreMapping = {
+                // Liste des genres
+                28: 'Action',
+                12: 'Aventure',
+                16: 'Animation',
+                35: 'Comédie',
+                80: 'Crime',
+                99: 'Documentaire',
+                18: 'Drame',
+                10751: 'Famille',
+                14: 'Fantastique',
+                36: 'Histoire',
+                27: 'Horreur',
+                10402: 'Musique',
+                9648: 'Mystery',
+                10749: 'Romance',
+                878: 'Science-Fiction',
+                10770: 'Téléfilm',
+                53: 'Thriller',
+                10752: 'Guerre',
+                37: 'Western'
+            };
+
+            function populateGenres() {
+                var genreSelect = $('#genre');
+                $.each(genreMapping, function(key, value) {
+                    genreSelect.append(`<option value="${key}">${value}</option>`);
+                });
+            }
+
+            populateGenres();
+            populateSeenMedia();
+
+            $('#search-form').on('submit', function(event) {
+                event.preventDefault();
+                $('#home-section').hide();
+                $('#seen-section').hide();
+                $('#results-section').show();
+                $('#back-to-home').show();
+                $('#done-adding').show();
+                
+                var title = $('#title').val();
+                $.post('/search', { title: title }, function(data) {
+                    $('#search-results').empty();
+                    data.forEach(function(media) {
+                        var mediaTitle = media.title || media.name;
+                        var mediaDate = media.release_date || media.first_air_date;
+                        var mediaType = media.media_type || (media.title ? 'movie' : 'tv');
+                        var mediaId = media.id;
+                        var posterPath = media.poster_path ? `https://image.tmdb.org/t/p/w500${media.poster_path}` : 'https://via.placeholder.com/50x75?text=No+Image';
+                        var mediaGenres = media.genres || 'Inconnu';
+                        var added = seenMedia.includes(mediaId);
+                        $('#search-results').append(
+                            `<li data-id="${mediaId}" data-title="${mediaTitle}" data-date="${mediaDate}" data-type="${mediaType}" data-genres="${mediaGenres}">
+                                <img src="${posterPath}" alt="${mediaTitle}">
+                                <div class="media-info">
+                                    ${mediaTitle} (${mediaDate}) - ${mediaType} <br> Genres: ${mediaGenres}
+                                </div>
+                                <button class="mark-seen" ${added ? 'disabled style="background-color:green;"' : ''}>${added ? 'Ajouté' : 'Vu'}</button>
+                            </li>`
+                        );
+                    });
+                }).fail(function(xhr, status, error) {
+                    console.error("Erreur de requête : ", error);
+                });
+            });
+
+            $('#search-results').on('click', '.mark-seen', function() {
+                var mediaElement = $(this).parent();
+                var media = {
+                    id: mediaElement.data('id'),
+                    title: mediaElement.data('title'),
+                    release_date: mediaElement.data('date'),
+                    media_type: mediaElement.data('type'),
+                    genres: mediaElement.data('genres'),
+                    poster_path: mediaElement.find('img').attr('src')
+                };
+                addToSeen(media, $(this));
+            });
+
+            $('#seen-media').on('click', '.remove-seen', function() {
+                var mediaElement = $(this).parent();
+                var mediaId = mediaElement.data('id');
+                removeFromSeen(mediaId, mediaElement);
+            });
+
+            $('#category, #genre').on('change', function() {
+                var category = $('#category').val();
+                var genre = $('#genre').val();
+                filterSeenMedia(category, genre);
+            });
+
+            $('#search-seen').on('input', function() {
+                var searchQuery = $(this).val().toLowerCase();
+                $('#seen-media li').each(function() {
+                    var title = $(this).data('title').toLowerCase();
+                    if (title.includes(searchQuery)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            $('#back-to-home, #done-adding').on('click', function() {
+                $('#results-section').hide();
+                $('#home-section').show();
+                $('#seen-section').show();
+                $('#back-to-home').hide();
+                $('#done-adding').hide();
+            });
+
+            function addToSeen(media, button) {
+                $.ajax({
+                    url: '/add',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(media),
+                    success: function(response) {
+                        var mediaTitle = media.title;
+                        var mediaDate = media.release_date;
+                        var mediaType = media.media_type;
+                        var posterPath = media.poster_path;
+                        var mediaGenres = media.genres;
+                        $('#seen-media').append(
+                            `<li data-id="${media.id}" data-media-type="${mediaType}" data-genres="${mediaGenres}" data-title="${mediaTitle}">
+                                <img src="${posterPath}" alt="${mediaTitle}">
+                                <div class="media-info">
+                                    ${mediaTitle} (${mediaDate}) - ${mediaType} <br> Genres: ${mediaGenres}
+                                </div>
+                                <button class="remove-seen">Supprimer</button>
+                            </li>`
+                        );
+                        seenMedia.push(media.id); // Ajout du média à la liste des médias vus
+                        // Changer l'apparence du bouton
+                        button.text('Ajouté');
+                        button.css('background-color', 'green');
+                        button.prop('disabled', true);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur d'ajout : ", error);
+                    }
+                });
+            }
+
+            function removeFromSeen(mediaId, mediaElement) {
+                $.ajax({
+                    url: '/remove',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ id: mediaId }),
+                    success: function(response) {
+                        mediaElement.remove();
+                        seenMedia = seenMedia.filter(id => id !== mediaId); // Retirer le média de la liste des médias vus
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur de suppression : ", error);
+                    }
+                });
+            }
+
+            function filterSeenMedia(category, genre) {
+                $('#seen-media').children('li').each(function() {
+                    var mediaType = $(this).data('media-type');
+                    var mediaGenres = $(this).data('genres').split(', ');
+                    var genreMatch = genre === "" || mediaGenres.includes(genreMapping[genre]);
+                    
+                    if ((category === "" || mediaType === category) && genreMatch) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            $('#back-to-home').hide();
+            $('#done-adding').hide();
+            $('#home-section').show();
+            $('#seen-section').show();
+        });
+    </script>
+</body>
+</html>
