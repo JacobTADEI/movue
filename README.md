@@ -17,7 +17,7 @@ Puis dans le dossier 'movue', créer votre environnement virtuel, avec cette com
 python -m venv <nom_de_votre_environnement>
 ```
 
-Ensuite, exécuter cette commande, pour obtenir les frameworks utilent à ce projet : 
+Ensuite, exécuter cette commande, pour obtenir les frameworks utiles à ce projet : 
 
 ```
 pip install -r requirements.txt
